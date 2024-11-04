@@ -10,4 +10,5 @@ type Token struct {
 const (
 	OPTION = "OPTION"
 	VALUE  = "VALUE"
+	EOF    = "EOF"
 )

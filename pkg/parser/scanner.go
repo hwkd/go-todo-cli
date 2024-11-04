@@ -13,6 +13,7 @@ func NewScanner(input string) *Scanner {
 	return scanner
 }
 
+// TODO: Remove error and let the parser decide if there's an error
 func (s *Scanner) NextToken() *Token {
 	var token *Token
 
@@ -21,10 +22,16 @@ func (s *Scanner) NextToken() *Token {
 	switch s.char {
 	case '-':
 		s.readChar()
-		// Assume option character exists after '-'.
-		token = &Token{
-			Type:    OPTION,
-			Literal: string(s.char),
+		if isLetter(s.char) {
+			token = &Token{
+				Type:    OPTION,
+				Literal: string(s.char),
+			}
+		} else {
+			token = &Token{
+				Type:    OPTION,
+				Literal: "",
+			}
 		}
 	case '"':
 		s.readChar()
@@ -32,8 +39,11 @@ func (s *Scanner) NextToken() *Token {
 			Type:    VALUE,
 			Literal: s.readString(),
 		}
-	default:
-		token = &Token{}
+	case 0:
+		token = &Token{
+			Type:    EOF,
+			Literal: EOF,
+		}
 	}
 
 	s.readChar()
@@ -72,4 +82,8 @@ func (s *Scanner) readString() string {
 	str := s.input[position:s.position]
 	s.readChar()
 	return str
+}
+
+func isLetter(char byte) bool {
+	return (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')
 }
